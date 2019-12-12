@@ -25,7 +25,8 @@ Open Scope nat.
 Notation "x == y" := (Nat.eqb x y)(at level 71).
 Ltac inv H := inversion H; subst; clear H.
 
-Definition var := nat.
+(* Definition var := nat. *)
+Notation var := nat.
 
 Inductive whileP :=
   wCon (n:var) (c:nat)
@@ -1100,6 +1101,39 @@ Section Test.
             end).
 
 End Test.
+
+Definition initState (n:nat) := fun (x:var) => if x then n else 0.
+Definition evals (p:whileP) (i o:nat) := exists s, ϕ (initState i) p s /\ eq (s 0) o.
+Definition computes (p:whileP) (f:nat->nat) := forall x, evals p x (f x).
+
+Definition language := nat -> Prop.
+Definition reducible (A B:language) := exists (f:nat->nat), (exists p, computes p f) /\ forall x, A x <-> B (f x).
+
+Definition H0 := fun x => exists o, ϕ (initState x) (goedInv x) o.
+Definition H := fun x => exists o, ϕ (initState (pi2 x)) (goedInv (pi1 x)) o.
+
+Lemma compPi1: computes (wPi1 0 0 1) pi1.
+Admitted.
+Lemma compPi2: computes (wPi2 0 0 1) pi2.
+Admitted.
+
+(* Lemma compGoed: computes ( *)
+
+Goal reducible H0 H.
+Proof.
+  exists (fun x => goed x x);split.
+  - exists (wGoed 0 0 0 1). intros x. admit.
+  - intros x. split.
+    + intros []. cbv [H].
+      exists x0.
+      now destruct (goedBij2 x x) as [-> ->].
+    + intros []. exists x0.
+      now destruct (goedBij2 x x) as [-> ->] in H1.
+Admitted.
+
+(* S m n *)
+(* Rice *)
+(* fixpoint *)
 
 
 From Coq Require Extraction.

@@ -101,69 +101,6 @@ Section totalSem.
 
 End totalSem.
 
-Section itSem.
-
-  (* min fehlt *)
-  Fixpoint it n f (s:state) (s3:state) : Prop :=
-    match n with
-    | 0 => s=s3
-    | S n'=> exists s2, f s s2 /\ it n' f s2 s3
-    end.
-
-  (* Fixpoint it2 n := *)
-  (*   match n with *)
-  (*   | 0 => fun f (s:state) (s3:state) => s=s3 *)
-  (*   | S n'=> fun f (s:state) (s3:state) => exists s2, f s s2 /\ it2 n' f s2 s3 *)
-  (*   end. *)
-
-  (* Fixpoint it3 n f (s:state) (s3:state) : Prop := *)
-  (*   match n with *)
-  (*   | 0 => s=s3 *)
-  (*   | S n'=> (fun H => exists s2, f s s2 /\ H s2) (fun a => it n' f a s3) *)
-  (*   end. *)
-
-  (* Lemma itAlt n f s s3: it n f s s3 <-> it2 n f s s3. *)
-  (* Proof. *)
-  (*   intros. split. *)
-  (*   - induction n in s |- *;intros H. *)
-  (*     + exact H. *)
-  (*     + cbn. destruct H as (S2&H&H1). *)
-  (*       exists S2. split;trivial. now apply IHn. *)
-  (*   - induction n in s |- *. *)
-  (*     + trivial. *)
-  (*     + cbn. intros [S2 []]. *)
-  (*       exists S2. split;trivial. *)
-  (*       now apply IHn. *)
-  (* Qed. *)
-
-  (* Inductive ϕ2 (S:state) : whileP -> state -> Prop := *)
-  (*   sem2Add i j k: ϕ2 S (wAdd i j k) (update i (S j + S k) S) *)
-  (* | sem2Sub i j k: ϕ2 S (wSub i j k) (update i (S j - S k) S) *)
-  (* | sem2Con i c: ϕ2 S (wCon i c) (update i c S) *)
-  (* | sem2Seq P1 P2 S2 S3: ϕ2 S P1 S2 -> ϕ2 S2 P2 S3 -> ϕ2 S (wSeq P1 P2) S3 *)
-  (* | sem2WhileP i P1 r S2: it r (fun x y => ϕ2 x P1 y) S S2 -> S2 i = 0 -> ϕ2 S (wWhile i P1) S2. *)
-
-  (* Lemma extendIt S S2 S3 (f:state->state->Prop) r: f S S2 -> it r f S2 S3 -> it (S r) f S S3. *)
-  (* Admitted. *)
-
-  (* Goal forall w s s2, ϕ s w s2 <-> ϕ2 s w s2. *)
-  (* Proof. *)
-  (*   intros w s s2. *)
-  (*   destruct w;split;try (intros H;inv H;constructor). *)
-  (*   - intros H. remember (wWhile i w);induction H;try congruence;subst. *)
-  (*     + apply sem2WhileP with (r:=0);trivial. *)
-  (*       reflexivity. *)
-  (*     + apply IHϕ2 in Heqw0. *)
-  (*       inv Heqw0. *)
-  (*       apply sem2WhileP with (r:=S r). *)
-  (*       * eapply extendIt;eassumption. *)
-  (*       * exact H6. *)
-  (*   - intros H. inv H. induction r. *)
-  (*     + rewrite H2. now constructor. *)
-  (* Admitted. *)
-
-End itSem.
-
 Lemma WhilePSeqKomm S S' P1 P2 P3: ϕ S (wSeq P1 (wSeq P2 P3)) S' <-> ϕ S (wSeq (wSeq P1 P2) P3) S'.
 Proof.
   split;intros H;inv H.
